@@ -52,9 +52,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa2d33f7e69f70e4894e6ac891717bad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  approachRate: -0.6
   judge: -8
   tolerance: 1.5
+  distance: 0
+  approachRate: 36
 --- !u!212 &212833982502853462
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -68,6 +69,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:

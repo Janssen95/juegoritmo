@@ -5,30 +5,33 @@ using UnityEngine.UI;
 
 public class Note : MonoBehaviour
 {
-
-    public float approachRate;
-    private Vector2 position;
-    public float judge;
-    private float upperTolerance;
-    private float lowerTolerance;
-    public float tolerance;
+    public float judge; //Linea juez
+    private float upperTolerance; //Tolerancia de la linea superior
+    private float lowerTolerance; //Tolerancia de la linea inferior
+    public float tolerance; //Valor de tolerancia
     private int score;
-    private float touchY;
     private Text scoreBoard;
-    private AudioSource hit;
-    public Vector2 spawnPos;
-    public Vector2 removePos;
-    public float songPosInBeats;
+    private AudioSource hit; //sonidito
+    private Vector2 removePos; //Posicion en que se borra
+    private Vector2 spawnPos; //Posicion en que aparece
+    private float spawnTime; //beat en el que aparece la nota
+    public float distance; //Distancia a recorrer
+    public float approachRate; //Velocidad de movimiento
 
     void Start()
     {
         //Calcular tolerancias
         upperTolerance = judge + tolerance;
         lowerTolerance = judge - tolerance;
-        spawnPos.x = position.x;
-        spawnPos.y = 7;
-        removePos.y = lowerTolerance - 1;
-        removePos.x = position.x;
+
+        //posiciones de inicio de las notas y distancia a recorrer para lerp
+        removePos = new Vector2(transform.position.x, lowerTolerance - 1);
+        distance = Vector2.Distance(spawnPos, removePos);
+
+        //tiempo de aparicion para calculos del lerp
+        spawnTime = (float)AudioSettings.dspTime;
+
+
         //Sonidito cuando le das
         hit = GameObject.Find("hit").GetComponent<AudioSource>();
         scoreBoard = GameObject.Find("scoreBoard").GetComponent<Text>();
@@ -38,8 +41,7 @@ public class Note : MonoBehaviour
 
     void Update()
     {
-
-        inputCheck();
+        inputKeyboard();
         deleteNote();
         movement();
     }
@@ -47,20 +49,18 @@ public class Note : MonoBehaviour
 
     void movement() /*Mover las notas en el eje y a lo largo del carril*/
     {
-        transform.position = Vector2.Lerp(spawnPos, removePos, songPosInBeats);
-        position.y = position.y + approachRate;
-        gameObject.transform.position = position;
+        spawnPos = transform.position;
+        transform.position = Vector2.MoveTowards(spawnPos, removePos, approachRate * Time.deltaTime);
     }
 
 
     void judging()
     {
         //Compara la posicion de la nota con respecto a la posicion de la linea juez para determinar si le diste bien
-        if (position.y >= lowerTolerance && position.y <= upperTolerance)
+        if (transform.position.y >= lowerTolerance && transform.position.y <= upperTolerance)
         {
             hit.Play();
             Destroy(gameObject);
-            score = score + 1;
             
         }
     }
@@ -68,7 +68,7 @@ public class Note : MonoBehaviour
 
     void deleteNote() //Eliminar notas conforme se salgan del area de juego
     {
-        if (position.y < removePos.y)
+        if (transform.position.y < lowerTolerance - 1)
         {
             Destroy(gameObject);
         }
@@ -86,6 +86,14 @@ public class Note : MonoBehaviour
                     judging();
                 }
             }
+        }
+    }
+
+    void inputKeyboard()
+    {
+        if (Input.anyKey)
+        {
+            judging();
         }
     }
 }

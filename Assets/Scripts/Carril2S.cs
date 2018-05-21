@@ -12,7 +12,7 @@ public class Carril2S : MonoBehaviour
 
     void Start()
     {
-        notes = new float[100];
+        notes = new float[7];
         NoteNumbering();
     }
 
